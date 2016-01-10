@@ -1,0 +1,22 @@
+Package: corpling
+Type: Package
+Title: Simple Tools for Corpus Linguists
+Version: 0.0.0.9000
+Date: 2016-01-01
+Authors@R: person("Earl", "Brown", email = "ekbrown77@gmail.com", role = c("aut", "cre"))
+Description: This package provides simple tools for corpus linguistics research.
+    The concordancer function, concord(), takes as input a regular expression and
+    a character vector and returns as output either a vector with the preceding
+    and following contexts separated by tabs from the matches or a preview in R,
+    provided by View().
+License: MIT + file LICENSE
+LazyData: TRUE
+Imports:
+    stringr (>= 1.0.0),
+    dplyr (>= 0.4.3),
+    readr (>= 0.2.2)
+RoxygenNote: 5.0.1
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
