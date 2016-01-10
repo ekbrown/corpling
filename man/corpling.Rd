@@ -4,12 +4,21 @@
 \name{corpling}
 \alias{corpling}
 \alias{corpling-package}
-\title{corpling: A package with some tools for corpus linguists}
+\title{corpling: Simple tools for corpus linguistics.}
 \description{
-The corpling package provides a simple concordancer and other tools.
+Produces concordances of regular expressions and creates frequency
+lists of ngrams.
 }
 \section{corpling functions}{
 
-concord
+\code{\link{concord}},
+\code{\link{load_txt}},
+\code{\link{ngram_freq}}
+}
+\seealso{
+\code{\link{load_txt}} loads files located in a directory on the hard
+   drive into a list, each file in one element of the list.
+   \code{\link{concord}} produces a concordance of a given regular
+   expression and \code{\link{ngram_freq}} produces a frequency list of ngrams.
 }
 

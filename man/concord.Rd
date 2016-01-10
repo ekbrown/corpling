@@ -4,49 +4,48 @@
 \alias{concord}
 \title{Produce a concordance.}
 \usage{
-concord(text, pattern, to_return = "df", ignore_case = TRUE,
-  locations = FALSE, extra_context = 0)
+concord(text, pattern, ignore_case = TRUE, locations = FALSE,
+  extra_context = 0, shorten = 0)
 }
 \arguments{
-\item{text}{The text to be searched in, as a character vector.}
+\item{text}{The text to search in, as either a character vector or a list
+of character vectors.}
 
 \item{pattern}{The Perl-compartible regular expression to search for.}
 
-\item{to_return}{Specifies the output as either a data frame, a character
-vector, or a preview (with base R's \code{View()} function),
-with the options \code{"df"} (the default), \code{"char"}, or
-\code{"preview"}.}
+\item{ignore_case}{If \code{ignore_case = TRUE} (the default),
+a case-insensitive search is performed.}
 
-\item{ignore_case}{Specifies whether the search should be case-sensitive or
-case-insensitive (the default).}
+\item{locations}{If \code{locations = TRUE}, the element indexes with
+matches are returned.}
 
-\item{locations}{Specifies whether, in addition to the contextualized
-matches, the element indexes with matches are returned.}
+\item{extra_context}{If positive, specifies the number of additional \strong{lines}
+around the lines with matches to return. Useful if not enough context is
+given in the lines with matches.}
 
-\item{extra_context}{Specifies the number of extra lines around matches
-to return, if more context is desired.}
+\item{shorten}{If positive, truncates the preceding and following contexts
+to the number of \strong{characters} specified. Useful if too much context is
+given in the lines with matches, for example, in texts with (very)
+long paragraphs.}
 }
 \value{
-Returns either a data frame or a character vector, or previews
-    the results, as specified by \code{to_return}.
+A data frame.
 }
 \description{
-Produces a concordance of a regular expression, that is,
-a display of words as they are used in context, and returns
-either a data frame, a character vector, or a preview,
-as specified by \code{to_return}.
+Produces a concordance of a regular expression and returns
+a data frame.
 }
 \examples{
 concord("hello", "e")
-concord("some sentence here", "sentence", to_return = "char")
+concord("some sentence here", "sentence")
 concord("some sentence here", "s[eo]")
+
 text <- c("first sentence here", "short paragraph here", "third line here")
 concord(text, "e[nr]", locations = TRUE)
 concord("some sentence here", "e(?=r)")
 concord("some sentence here", "e(?!n)")
 }
 \seealso{
-Stefan Th. Gries' function \code{exact.matches()}:
-    \url{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}.
+Stefan Th. Gries' function \code{\href{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}{exact.matches()}}.
 }
 

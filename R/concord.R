@@ -1,41 +1,63 @@
 #' Produce a concordance.
 #'
-#' Produces a concordance of a regular expression, that is,
-#' a display of words as they are used in context, and returns
-#' either a data frame, a character vector, or a preview,
-#' as specified by \code{to_return}.
+#' Produces a concordance of a regular expression and returns
+#' a data frame.
 #'
-#' @param text The text to be searched in, as a character vector or something
-#'     coercible to it, such as a list with elements of character vectors.
-#'     Tabs
+#' @param text The text to search in, as either a character vector or a list
+#'    of character vectors.
 #' @param pattern The Perl-compartible regular expression to search for.
-#' @param to_return Specifies the output as either a data frame, a character
-#'    vector, or a preview (with base R's \code{View()} function),
-#'    with the options \code{"df"} (the default), \code{"char"}, or
-#'    \code{"preview"}.
-#' @param ignore_case Specifies whether the search should be case-sensitive or
-#'     case-insensitive (the default).
-#' @param locations Specifies whether, in addition to the contextualized
-#'     matches, the element indexes with matches are returned.
-#' @param extra_context Specifies the number of extra lines around matches
-#'     to return, if more context is desired.
+#' @param ignore_case If \code{ignore_case = TRUE} (the default),
+#'     a case-insensitive search is performed.
+#' @param locations If \code{locations = TRUE}, the element indexes with
+#'     matches are returned.
+#' @param extra_context If positive, specifies the number of additional \strong{lines}
+#'     around the lines with matches to return. Useful if not enough context is
+#'     given in the lines with matches.
+#' @param shorten If positive, truncates the preceding and following contexts
+#'     to the number of \strong{characters} specified. Useful if too much context is
+#'     given in the lines with matches, for example, in texts with (very)
+#'     long paragraphs.
 #'
-#' @return Returns either a data frame or a character vector, or previews
-#'     the results, as specified by \code{to_return}.
+#' @return A data frame.
 #'
-#' @seealso Stefan Th. Gries' function \code{exact.matches()}:
-#'     \url{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}.
+#' @seealso Stefan Th. Gries' function \code{\href{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}{exact.matches()}}.
 #'
 #' @examples
 #' concord("hello", "e")
-#' concord("some sentence here", "sentence", to_return = "char")
+#' concord("some sentence here", "sentence")
 #' concord("some sentence here", "s[eo]")
+#'
 #' text <- c("first sentence here", "short paragraph here", "third line here")
 #' concord(text, "e[nr]", locations = TRUE)
 #' concord("some sentence here", "e(?=r)")
 #' concord("some sentence here", "e(?!n)")
 #' @export
-concord <- function(text, pattern, to_return = "df", ignore_case = TRUE, locations = FALSE, extra_context = 0) {
+concord <- function(text, pattern, ignore_case = TRUE, locations = FALSE, extra_context = 0, shorten = 0) {
+  UseMethod("concord")
+}
+
+#' @export
+concord.list <- function(text, pattern, ignore_case = TRUE, locations = FALSE, extra_context = 0, shorten = 0) {
+
+  output <- lapply(text, function(x) concord.default(x, pattern, ignore_case, locations, extra_context, shorten))
+  rep_times <- sapply(output, nrow)
+  rep_times <- sapply(rep_times, function(x) if (is.null(x)) {0} else {x})
+
+  if (is.null(names(output))) {
+    names(output) <- seq_along(output)
+  }
+
+  SOURCE <- rep(names(output), rep_times)
+
+  output <- data.frame(do.call("rbind", output))
+  output <- cbind(SOURCE, output)
+  rownames(output) <- seq(1, nrow(output))
+  return(output)
+
+}
+
+#' @export
+concord.default <- function(text, pattern, ignore_case = TRUE, locations = FALSE, extra_context = 0, shorten = 0) {
 
   # replaces tabs with spaces in the input, so that the output doesn't have extra columns
   text <- stringr::str_replace_all(text, "\t", " ")
@@ -75,36 +97,46 @@ concord <- function(text, pattern, to_return = "df", ignore_case = TRUE, locatio
     }
 
     # optionally, adds extra context
-    if (extra_context < 0) stop("The argument 'extra_context' must be equal to or greater than '0'.")
-
-    extra_context <- ceiling(extra_context)
-    all_pre <- c()
-    all_fol <- c()
-    counter <- extra_context
-    while (counter != 0) {
-
-      cur_pre_num <- element_num - counter
-      cur_pre_num <- sapply(cur_pre_num, function(x) if (x < 0) {0} else {x})
-      temp <- sapply(cur_pre_num, function(x) text[x])
-      cur_pre <- sapply(temp, function(x) if (length(x) > 0) {x} else {""})
-      all_pre <- stringr::str_c(all_pre, cur_pre, sep = " ")
-
-      cur_fol_num <- element_num + counter
-      cur_fol_num <- sapply(cur_fol_num, function(x) if (x > length(text)) {0} else {x})
-      temp <- sapply(cur_fol_num, function(x) text[x])
-      cur_fol <- sapply(temp, function(x) if (length(x) > 0) {x} else {""})
-      all_fol <- stringr::str_c(cur_fol, all_fol, sep = " ")
-
-      counter <- counter - 1
-    }
-
     if (extra_context > 0) {
+
+      # extra_context <- ceiling(extra_context)
+      all_pre <- c()
+      all_fol <- c()
+      counter <- extra_context
+      while (counter > 0) {
+
+        # gets extra preceding context
+        cur_pre_num <- element_num - counter
+        cur_pre_num <- sapply(cur_pre_num, function(x) if (x < 0) {0} else {x})
+        temp <- sapply(cur_pre_num, function(x) text[x])
+        cur_pre <- sapply(temp, function(x) if (length(x) > 0) {x} else {""})
+        all_pre <- stringr::str_c(all_pre, cur_pre, sep = " ")
+
+        # gets extra following context
+        cur_fol_num <- element_num + counter
+        cur_fol_num <- sapply(cur_fol_num, function(x) if (x > length(text)) {0} else {x})
+        temp <- sapply(cur_fol_num, function(x) text[x])
+        cur_fol <- sapply(temp, function(x) if (length(x) > 0) {x} else {""})
+        all_fol <- stringr::str_c(cur_fol, all_fol, sep = " ")
+
+        counter <- counter - 1
+
+      } # end while loop
+
       pre <- stringr::str_c(all_pre, pre, sep = " ")
       fol <- stringr::str_c(fol, all_fol, sep = " ")
-    }
+
+    } # end extra context
 
     pre <- stringr::str_trim(pre)
     fol <- stringr::str_trim(fol)
+
+    # optionally, truncates the pre and post contexts
+    if (shorten > 0) {
+      pre_len <- stringr::str_length(pre)
+      pre <- stringr::str_sub(pre, pre_len - shorten + 1, pre_len)
+      fol <- stringr::str_sub(fol, 1, shorten)
+    }
 
     # pastes output together
     output <- stringr::str_c(pre, matches, fol, sep = "\t")
@@ -115,23 +147,14 @@ concord <- function(text, pattern, to_return = "df", ignore_case = TRUE, locatio
     }
 
     # returns the output to the user
-    if (to_return %in% c("df", "preview")) {
       df <- data.frame(do.call("rbind", stringr::str_split(output, "\t")))
       if (locations) {
-        names(df) <- c("ELEMENT_NUM", "PRE_CONTEXT", "MATCH", "POST_CONTEXT")
+        names(df) <- c("INDEX", "PRE_CONTEXT", "MATCH", "POST_CONTEXT")
       } else {
         names(df) <- c("PRE_CONTEXT", "MATCH", "POST_CONTEXT")
       }
-      if (to_return == "df") {
-        return(df)
-      } else {
-        View(df)
-      }
-    } else if (to_return == "char") {
-      return(output)
-    } else {
-      stop(stringr::str_c("The argument 'to_return' must be either 'char', 'df', or 'preview'.\n"))
-    }
+
+    return(df)
 
   } # end if any matches
 

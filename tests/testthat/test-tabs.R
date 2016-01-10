@@ -8,8 +8,8 @@ test_that("concordance with tabs", {
   )
 
   expect_equal(
-    concord("some sentence here", "sentence", to_return = "char"),
-    "some\tsentence\there"
+    concord("some sentence here", "sentence"),
+    data.frame(PRE_CONTEXT = "some", MATCH = "sentence", POST_CONTEXT = "here")
   )
 
   expect_equal(
@@ -26,13 +26,26 @@ test_that("concordance with tabs", {
   )
 
   expect_equal(
-    concord("some sentence here", "e(?!n)", to_return = "char"),
-    c("som\te\tsentence here", "some sentenc\te\there", "some sentence h\te\tre", "some sentence her\te\t")
+    concord("some sentence here", "e(?!n)"),
+    data.frame(
+      PRE_CONTEXT = c("som", "some sentenc", "some sentence h", "some sentence her"),
+      MATCH = c("e", "e", "e", "e"),
+      POST_CONTEXT = c("sentence here", "here", "re", "")
+    )
   )
 
   expect_equal(
-    concord(c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"), "(eight|nine|ten)", to_return = "char", extra_context = 2),
-    c("six seven\teight\tnine ten", "seven eight\tnine\tten", "eight nine\tten\t")
+    concord(c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"), "(eight|nine|ten)", extra_context = 2),
+    data.frame(
+      PRE_CONTEXT = c("six seven", "seven eight", "eight nine"),
+      MATCH = c("eight", "nine", "ten"),
+      POST_CONTEXT = c("nine ten", "ten", "")
+    )
+  )
+
+  expect_equal(
+    concord("some sentence here", "sentence", shorten = 2),
+    data.frame(PRE_CONTEXT = "me", MATCH = "sentence", POST_CONTEXT = "he")
   )
 
 })
