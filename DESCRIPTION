@@ -11,8 +11,7 @@ License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
     stringr (>= 1.0.0),
-    dplyr (>= 0.4.3),
-    readr (>= 0.2.2)
+    dplyr (>= 0.4.3)
 RoxygenNote: 5.0.1
 Suggests: testthat,
     knitr,

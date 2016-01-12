@@ -43,7 +43,8 @@ load_txt <- function(pathway, encoding = "UTF-8", comment_char = NULL, recursive
   }
 
   # loads text files
-  txt <- lapply(file_names, function(x) readr::read_lines(x, locale = readr::locale(encoding = encoding)))
+  txt <- lapply(file_names, function(x) readLines(x, encoding = encoding))
+
   names(txt) <- basename(file_names)
 
   # optionally, eliminates lines that begin with comment_char
