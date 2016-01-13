@@ -46,6 +46,6 @@ concord("some sentence here", "e(?=r)")
 concord("some sentence here", "e(?!n)")
 }
 \seealso{
-Stefan Th. Gries' function \code{\href{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}{exact.matches()}}.
+Stefan Th. Gries' function \href{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}{exact.matches()}.
 }
 

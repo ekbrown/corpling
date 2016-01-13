@@ -20,7 +20,7 @@
 #'
 #' @return A data frame.
 #'
-#' @seealso Stefan Th. Gries' function \code{\href{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}{exact.matches()}}.
+#' @seealso Stefan Th. Gries' function \href{http://www.linguistics.ucsb.edu/faculty/stgries/exact_matches.r}{exact.matches()}.
 #'
 #' @examples
 #' concord("hello", "e")
