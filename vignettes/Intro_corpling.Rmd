@@ -13,12 +13,20 @@ Two simple but useful tools in corpus linguistics are concordance displays and n
 
 ## Concordance displays
 
-The backbone of corpus linguistics is the concordance display, that is, seeing words in the contexts in which they are used. The function `concord()` produces such a display.
+The backbone of corpus linguistics is the concordance display, that is, seeing words in the contexts in which they are used. The function `concord()` produces such a display. The function takes as input a text and a regular expression. The text must be either a character vector or a list of character vectors (the output of `load_txt()`; see below). With the `ignore_case` argument, users specify whether the search should be case-sensitive or case-insensitive (the default). With the `locations` argument, users specify whether the paragraph number (element index, to be exact) of matches should also be returned. With the `extra_context` argument, users specify whether extra context surrounding matches should be returned. And with the `shorten` argument, users specify whether the context surrounding matches should be shortened, for example, when a text has (very) long paragraphs.
 
-See `?concord` for details about the arguments.
+See `?concord` for details about the arguments and reproducible examples.
 
 ## Ngram frequency lists
 
-Ngram frequencies are also a huge part of corpus linguistics. The function `ngram_freq()` produces a frequency list of single words, bigrams, trigrams, or even larger ngrams, specified by the `num_wd` argument.
+Ngram frequencies are also an important part of corpus linguistics. The function `ngram_freq()` produces a frequency list of single words, bigrams, trigrams, or even larger ngrams. Users specify the number of words in the ngrams with the `num_wd` argument, with `num_wd = 1` (single words) as the default. The `ignore_case` argument specifies whether the case of the input text should be disregarded so that, for example, "The" and "the" are counted as the same word rather than two different words. With the `order_by` argument, users specify how the frequency list should be order, whether alphabetically, with `order_by = "alpha"` (the default) or by frequency, with `order_by = "freq"`. Users can specify that the list be ordered in descending order with `descending = TRUE`. With the `min_freq` argument, users can specify the minimum frequency that an ngram must have in order to be included in the list, with `min_freq = 1` (the default) indicating that all ngrams should be included. Finally, the `word_char` argument allows users to specify the exact characters that should considered word characters. If `word_char = NULL` (the default), the user's locale will be used to distinguish word characters (e.g. "abc") from non-word characters (e.g. ".?!").
 
-See `?ngram_freq` for details about the arguments.
+See `?ngram_freq` for details about the arguments and reproducible examples.
+
+## Load text files
+
+The helper function `load_txt()` is provided to load `.txt` files into a list that can then be passed to `concord()` or `ngram_freq`. It only loads `.txt` files in a directory, ignoring files with other extensions that may be present in the directory, specified with the `pathway` argument. With the `encoding` argument, users can specify the type of encoding from among two options: `encoding = "UTF-8"` (the default) and `encoding = "latin1"`. With the `comment_char` argument, users can specify a character at the beginning of lines in the text files that should be eliminated when loading. This can be used to eliminate header lines with metadata before passing the text to `concord()` or `ngram_freq`. Finally, the `recursive` argument allows users to specify whether the function recursively searches for `.txt` files, beginning in the directory given in the `pathway` argument.
+
+## Pipe operator
+
+The arguments in the functions are arranged in such a way that the popular pipe operator `%>%` from the `magrittr` package can used to pass the output of `load_txt()` directly into `concord()` or `ngram_freq()`.

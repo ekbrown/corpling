@@ -73,14 +73,14 @@ ngram_freq.list <- function(text, num_wd = 1, ignore_case = TRUE, order_by = "al
 }
 
 
-#' Lead method used in ngram_freq.default
+#' Method used in ngram_freq.default
 #'
 #' @param x input character vector
 #' @param n the number of words to lead by
 #'
 #' @keywords internal
 #' @export
-lead <- function(x, n) c(x[-seq_len(n)], rep(NA, n))
+move_ahead <- function(x, n) c(x[-seq_len(n)], rep(NA, n))
 
 #' @export
 ngram_freq.default <- function(text, num_wd = 1, ignore_case = TRUE, order_by = "alpha", descending = FALSE, min_freq = 1, word_char = NULL) {
@@ -101,7 +101,7 @@ ngram_freq.default <- function(text, num_wd = 1, ignore_case = TRUE, order_by = 
   to_eval <- "lapply(wds, function(x) stringr::str_c(x, "
   for (i in seq(num_wd) - 1) {
     if (i == 0) next
-    to_add <- stringr::str_c("lead(x, ", i, "), ")
+    to_add <- stringr::str_c("move_ahead(x, ", i, "), ")
     to_eval <- stringr::str_c(to_eval, to_add)
   }
   to_eval <- stringr::str_c(to_eval, "sep = ' '))")
