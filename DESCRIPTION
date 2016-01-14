@@ -1,7 +1,7 @@
 Package: corpling
 Type: Package
 Title: Simple Tools for Corpus Linguistics
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Date: 2016-01-01
 Authors@R: person("Earl", "Brown", email = "ekbrown77@gmail.com", role = c("aut", "cre"))
 Description: Provides simple tools for corpus linguistics, such as the ability to
